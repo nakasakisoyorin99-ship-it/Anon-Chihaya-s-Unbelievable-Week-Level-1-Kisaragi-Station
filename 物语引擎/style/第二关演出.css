@@ -1,0 +1,17 @@
+/* 第二关资源景别，逻辑和界面机制沿用通用章节运行时。 */
+.chapter-objective { position:fixed;z-index:10004;left:5%;right:5%;top:12%;margin:0;padding:14px 18px;color:#edf0f6;background:#162033ed;border-left:3px solid #e3a4bd;font:16px/1.7 "Microsoft YaHei",sans-serif;pointer-events:none; }
+.chapter-objective[hidden],body:not(:has(game-screen.active)) .chapter-objective,body:has(loading-screen.active) .chapter-objective { display:none!important; }
+main-screen { background:linear-gradient(90deg,#080e1ce6,#08101b4d),url('../assets/scenes/第二关/章节封面.jpg') center/cover no-repeat !important; }
+[data-screen="game"] [data-character="rana"] { height:calc(var(--portrait-scale) * .962)!important; }
+[data-screen="game"] [data-character="rana"][data-sprite="R-03"],
+[data-screen="game"] [data-character="rana"][data-sprite="R-09"],
+[data-screen="game"] [data-character="rana"][data-sprite="R-09b"] { height:126%!important; bottom:-53%!important; }
+[data-screen="game"] [data-character="anon"][data-sprite="A-06"] { height:130%!important; bottom:-53%!important; }
+#chapter-receipt { position:absolute;z-index:10005;inset:6% 13% 27%;padding:24px 30px;overflow:auto;background:#ebe9e0f7;color:#253449;border:1px solid #9da6aa;box-shadow:0 12px 50px #0008;font:16px/1.75 "Microsoft YaHei",sans-serif; }
+#chapter-receipt[hidden] { display:none!important; }
+#chapter-receipt h2 { font-size:20px; }
+#chapter-receipt dt { font-weight:bold;margin-top:10px; }
+#chapter-receipt dd { margin:0;white-space:pre-wrap;overflow-wrap:anywhere; }
+#chapter-receipt button { padding:8px 15px;background:#33465e;color:white;position:sticky;top:0; }
+body:not(:has(game-screen.active)) #chapter-receipt, body:has(loading-screen.active) #chapter-receipt { display:none!important; }
+@media(max-width:650px){ #chapter-receipt{inset:4% 4% 24%;padding:15px;font-size:14px;} }
