@@ -4,11 +4,16 @@
 FROM node:22-alpine
 WORKDIR /app
 RUN addgroup -S mygo && adduser -S mygo -G mygo
+# 上游引擎独立成层，章节素材和脚本更新时复用。
+COPY 物语引擎/engine/ ./物语引擎/engine/
 # server.mjs 以 chapterRoot（/app/五题镜像工程/第一题_如月车站）相对定位资源，保持与仓库一致的目录层级。
 COPY 五题镜像工程/第一题_如月车站/赛题服务/服务端源码/论坛服务.mjs ./五题镜像工程/第一题_如月车站/赛题服务/服务端源码/论坛服务.mjs
 COPY 五题镜像工程/第一题_如月车站/赛题服务/题目数据/论坛内容.json ./五题镜像工程/第一题_如月车站/赛题服务/题目数据/论坛内容.json
 COPY 五题镜像工程/第一题_如月车站/赛题服务/网页资源/ ./五题镜像工程/第一题_如月车站/赛题服务/网页资源/
-COPY 物语引擎/ ./物语引擎/
+COPY 物语引擎/assets/ ./物语引擎/assets/
+COPY 物语引擎/style/ ./物语引擎/style/
+COPY 物语引擎/js/ ./物语引擎/js/
+COPY 物语引擎/index.html 物语引擎/manifest.json 物语引擎/service-worker.js 物语引擎/favicon.ico ./物语引擎/
 ENV NODE_ENV=production PORT=60001 HOST=0.0.0.0
 EXPOSE 60001
 USER mygo
