@@ -6,6 +6,73 @@
   let preview = null;
   let panel;
   let status;
+  let titlePlayer = null;
+  let manualStatus;
+
+  function stopTitleMusic() {
+    if (!titlePlayer) return;
+    titlePlayer.pause();
+    titlePlayer = null;
+  }
+
+  function mountManualTitleAudio() {
+    const key = window.MygoChapterConfig?.manualTitleMusic;
+    const screen = document.querySelector('main-screen');
+    if (!key || !screen) return;
+    const control = document.createElement('section');
+    control.className = 'title-manual-audio';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = '手动开启声音';
+    const hint = document.createElement('span');
+    hint.textContent = '如果标题界面没有BGM，请尝试手动打开';
+    manualStatus = document.createElement('span');
+    manualStatus.className = 'title-manual-audio-status';
+    manualStatus.setAttribute('role', 'status');
+    manualStatus.setAttribute('aria-live', 'polite');
+    control.append(button, hint, manualStatus);
+    screen.append(control);
+    button.addEventListener('click', async event => {
+      event.stopPropagation();
+      stopPreview();
+      const asset = monogatari.asset('music', key);
+      if (!asset) { manualStatus.textContent = '未找到标题配乐资源。'; return; }
+      const preferences = { ...monogatari.preference('Volume') };
+      if (!(preferences.Music > 0)) {
+        preferences.Music = .8;
+        monogatari.preference('Volume', preferences);
+        syncVolume('music', preferences.Music);
+      }
+      if (!titlePlayer) {
+        const paths = monogatari.setting('AssetsPath');
+        titlePlayer = new Audio(`${paths.root}/${paths.music}/${asset}`);
+        titlePlayer.preload = 'auto';
+      }
+      const player = titlePlayer;
+      player.muted = false;
+      player.volume = Math.max(0, Math.min(1, preferences.Music * Number(window.MygoChapterConfig.manualTitleMusicVolume ?? 100) / 100));
+      manualStatus.textContent = '正在开启标题配乐…';
+      // play必须直接发生在点击处理器中，不能先等待异步初始化。
+      const playing = player.play();
+      window.MygoNativeAudio?.resumeFromGesture();
+      unlock();
+      try {
+        await playing;
+        if (titlePlayer === player) manualStatus.textContent = '标题配乐已开始播放。';
+      } catch (error) {
+        if (titlePlayer === player) manualStatus.textContent = error.name === 'NotAllowedError'
+          ? '浏览器阻止了播放，请再次点击或检查网站声音权限。'
+          : `标题配乐播放失败：${error.message}`;
+      }
+    });
+    const observer = new MutationObserver(() => {
+      if (!screen.classList.contains('active')) {
+        stopTitleMusic();
+        manualStatus.textContent = '';
+      }
+    });
+    observer.observe(screen, { attributes: true, attributeFilter: ['class'] });
+  }
 
   function note(message) {
     if (status) status.textContent = message;
@@ -45,6 +112,7 @@
       window.MygoNativeAudio?.setVolume(player, value * Number(player.dataset?.volumePercentage ?? 100) / 100);
     }
     if (preview && type === 'music') preview.volume = value;
+    if (titlePlayer && type === 'music') titlePlayer.volume = Math.max(0, Math.min(1, value * Number(window.MygoChapterConfig?.manualTitleMusicVolume ?? 100) / 100));
     const input = panel?.querySelector(`[data-volume="${type}"]`);
     if (input) { input.value = String(Math.round(value * 100)); input.nextElementSibling.textContent = input.value + '%'; }
   }
@@ -55,6 +123,7 @@
     const key = panel.querySelector('.sound-music-select').value;
     if (!keys.includes(key)) { note('当前关卡未配置背景音乐。'); return; }
     stopPreview();
+    stopTitleMusic();
     const paths = monogatari.setting('AssetsPath');
     preview = new Audio(`${paths.root}/${paths.music}/${monogatari.asset('music', key)}`);
     preview.volume = volume;
@@ -73,9 +142,10 @@
     syncVolume('music', volume.Music);
     syncVolume('sound', volume.Sound);
     stopPreview();
+    stopTitleMusic();
     window.MygoNativeAudio?.resumeFromGesture();
     // 原生HTMLAudio试听与引擎WebAudio并行解锁，必须在点击处理器中直接play。
-    const sample = monogatari.asset('sounds', 'station_signal');
+    const sample = monogatari.asset('sounds', window.MygoChapterConfig?.audioPreviewSound || 'station_signal');
     if (!sample) { note('当前关卡未配置试听音效。'); await unlock(); return; }
     const paths = monogatari.setting('AssetsPath');
     preview = new Audio(`${paths.root}/${paths.sounds}/${sample}`);
@@ -84,7 +154,7 @@
     const ready = await unlock();
     try {
       await playing;
-      note(ready ? '声音已开启，正在试听三短一长。剧情配乐从对应场景开始。' : '试听已播放，但剧情音频仍未解锁。请再点击一次。');
+      note(ready ? `声音已开启，正在试听${window.MygoChapterConfig?.audioPreviewLabel || '三短一长'}。剧情配乐从对应场景开始。` : '试听已播放，但剧情音频仍未解锁。请再点击一次。');
     } catch (error) {
       note(`试听失败：${error.message}。请确认页面未被静音。`);
     }
@@ -99,8 +169,12 @@
       panel.className = 'sound-control-panel';
       panel.innerHTML = '<h2>声音</h2><p>标题和开场对白没有背景音乐。空站风声、车厢轰鸣和配乐会随剧情进入。</p><button type="button" class="sound-enable">开启声音并试听</button><p class="sound-status" role="status" aria-live="polite"></p><audio class="sound-native-player" controls preload="none" aria-label="原生播放器试听"></audio><p class="sound-output-note">试听正常播放但没有声音时，请检查浏览器标签页静音、Windows 音量混合器中浏览器／ZCode 的音量，以及耳机输出设备。</p><form method="dialog"><button>关闭</button></form>';
       document.body.append(panel);
+      if (window.MygoChapterConfig?.audioDescription) panel.querySelector('p').textContent = window.MygoChapterConfig.audioDescription;
+      for (const credit of window.MygoChapterConfig?.audioCredits || []) {
+        const p = document.createElement('p'); p.textContent = credit; p.className = 'sound-credit'; panel.append(p);
+      }
       status = panel.querySelector('.sound-status');
-      const sample = monogatari.asset('sounds', 'station_signal');
+      const sample = monogatari.asset('sounds', window.MygoChapterConfig?.audioPreviewSound || 'station_signal');
       const paths = monogatari.setting('AssetsPath');
       if (sample) panel.querySelector('audio').src = `${paths.root}/${paths.sounds}/${sample}`;
       const mixer = document.createElement('section');
@@ -138,6 +212,7 @@
         });
         document.querySelector(tag)?.append(button);
       }
+      mountManualTitleAudio();
       // 页面恢复、读档后再次点击时也恢复输出；在手势捕获阶段调用，早于异步剧情执行。
       window.addEventListener('mygo:audio-error', event => { note(event.detail.message); });
       document.addEventListener('pointerdown', () => { unlock(); }, { capture: true });
@@ -145,7 +220,7 @@
         if (!event.repeat && (['Space', 'Enter'].includes(event.code) || event.key === 'Control')) unlock();
       }, { capture: true });
       document.addEventListener('click', event => {
-        if (event.target.closest('[data-action="start"]')) { stopPreview(); unlock(); }
+        if (event.target.closest('[data-action="start"]')) { stopTitleMusic(); stopPreview(); unlock(); }
       }, { capture: true });
     }
   };
