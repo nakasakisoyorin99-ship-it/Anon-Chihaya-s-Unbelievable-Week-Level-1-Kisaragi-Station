@@ -108,6 +108,7 @@
           };
         }
         this.player = player;
+        if (this.type === 'sound' && !paused) player.currentTime = 0;
         stopFade(player);
         player.loop = this.props.includes('loop');
         player.muted = false;
