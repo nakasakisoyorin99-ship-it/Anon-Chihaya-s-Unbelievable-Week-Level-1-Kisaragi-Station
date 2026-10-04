@@ -2,8 +2,8 @@
 .sound-control-toggle{position:absolute;right:4%;top:20px;z-index:90;width:auto!important;min-width:0!important;min-height:0!important;height:32px!important;padding:5px 12px!important;margin:0!important;background:#171e32a6!important;color:#e2dce9;border:1px solid #b9b4cb45;border-radius:3px;font-family:var(--vn-font);font-size:12px;line-height:20px}
 .sound-control-panel{width:min(620px,80vw);padding:28px;background:#172238;color:#e7edf5;border:1px solid #acbfd76b;border-radius:8px;font-family:var(--vn-font);font-size:15px;line-height:1.8}.sound-control-panel::backdrop{background:#080c19c9}.sound-control-panel h2{font-size:23px}.sound-control-panel button{width:auto!important;min-width:160px;height:auto!important;padding:10px 20px!important;background:#3c455f;color:white;border:1px solid #acbfd76b;border-radius:4px}.sound-native-player{width:100%;margin:15px 0}.sound-status{color:#c7dfed;min-height:48px}.sound-output-note{font-size:13px;color:#b6c1d5}
 .sound-control-panel{max-height:85vh;overflow-y:auto}.sound-mixer{text-align:left;margin:16px 0}.sound-mixer label{display:grid;grid-template-columns:140px minmax(0,1fr) 48px;align-items:center;gap:12px;margin:14px 0;font-size:14px}.sound-mixer input[type="range"]{width:100%;min-width:0}.sound-mixer select{grid-column:2 / 4;width:100%;padding:8px;background:#27344b;color:#ecf0f8;border:1px solid #acbfd76b}.sound-mixer button{font-size:13px!important;margin:5px!important;padding:8px 12px!important}
-@font-face{font-family:"Mygo Sans";src:url('../assets/fonts/思源黑体_NotoSansSC/NotoSansSC%5Bwght%5D.ttf') format('truetype');font-style:normal;font-weight:100 900;font-display:swap}
-@font-face{font-family:"Mygo Serif";src:url('../assets/fonts/思源宋体_NotoSerifSC/NotoSerifSC%5Bwght%5D.ttf') format('truetype');font-style:normal;font-weight:200 900;font-display:swap}
+@font-face{font-family:"Mygo Sans";src:url('../assets/fonts/思源黑体_NotoSansSC/NotoSansSC%5Bwght%5D.subset.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:swap}
+@font-face{font-family:"Mygo Serif";src:url('../assets/fonts/思源宋体_NotoSerifSC/NotoSerifSC%5Bwght%5D.subset.woff2') format('woff2');font-style:normal;font-weight:200 900;font-display:swap}
 :root{
   --vn-ink:#f2f0f5;--vn-muted:#b5bacb;--vn-accent:#e4b4cb;--vn-border:#bec5db38;
   --vn-panel:#151b2bef;--vn-edge:clamp(24px,5vw,100px);--vn-dialogue-height:clamp(164px,24vh,250px);
@@ -14,7 +14,7 @@ text-box,quick-menu,main-menu,.chapter-hud,.forum-bridge,.chapter-instructions{f
 [hidden]{display:none!important}
 button,input,textarea{font-family:inherit}button{transition:background .15s,color .15s,border-color .15s}
 button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--vn-accent);outline-offset:4px}
-main-screen{background:linear-gradient(90deg,#111528cf 0%,#18172c85 34%,#11152812 67%),linear-gradient(0deg,#18182dc9,#171a3000 42%),url('../assets/scenes/第一关/cg_title.jpg') center/cover no-repeat;overflow:hidden}
+main-screen{background:linear-gradient(90deg,#111528cf 0%,#18172c85 34%,#11152812 67%),linear-gradient(0deg,#18182dc9,#171a3000 42%),url('../assets/scenes/第一关/cg_title.webp') center/cover no-repeat;overflow:hidden}
 main-screen::before,main-screen::after{display:none!important}
 .title-composition{position:absolute;inset:0;pointer-events:none;text-align:left;color:#f7edf4;text-shadow:0 2px 18px #14122260}
 .title-kicker{position:absolute;top:14%;left:8.5%;font-size:11px;letter-spacing:.25em;color:#d6c6db;display:flex;align-items:center;gap:12px}

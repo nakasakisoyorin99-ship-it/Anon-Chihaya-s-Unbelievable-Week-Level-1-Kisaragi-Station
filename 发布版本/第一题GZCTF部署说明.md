@@ -39,10 +39,3 @@
 docker run --rm -p 60001:60001 -e GZCTF_FLAG='flag{test}' <镜像地址>
 # 打开 http://127.0.0.1:60001/
 ```
-
-
-## 加载优化（2026-10-04）
-
-第一关镜像：`ghcr.io/nakasakisoyorin99-ship-it/mygo-ch1:latest`（linux/amd64）。
-
-保留 28 张背景/CG 和 47 张立绘。字体子集化为 WOFF2，背景转换为 WebP；10 Mbps / 40 ms 的本地冷启动实测下载 22.1 MiB，标题约 22.3 秒可交互。动态容器必需设置 `GZCTF_FLAG`，容器端口 `60001`。

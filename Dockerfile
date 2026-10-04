@@ -2,6 +2,8 @@
 # 第一题·如月车站 赛题容器
 # 平台必须注入 GZCTF_FLAG（动态FLAG）。PORT 可选，默认 60001，HOST 建议 0.0.0.0。
 FROM node:22-alpine
+LABEL org.opencontainers.image.source="https://github.com/nakasakisoyorin99-ship-it/Anon-Chihaya-s-Unbelievable-Week-Level-1-Kisaragi-Station" \
+      org.opencontainers.image.title="MyGO Chapter 1 - Kisaragi Station"
 WORKDIR /app
 RUN addgroup -S mygo && adduser -S mygo -G mygo
 # 上游引擎独立成层，章节素材和脚本更新时复用。
